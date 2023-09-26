@@ -298,6 +298,10 @@ def main():
                 ret_value=ret_value)
             backend_files += [quant_param, quant_bin]
 
+    # skip vis
+    logger.info('quant done.')
+    return
+
     if args.test_img is None:
         args.test_img = args.img
 

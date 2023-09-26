@@ -13,7 +13,7 @@ mmdeploy_onnx2ncnn
 
 # Distribution / packaging
 .Python
-build/
+build*/
 develop-eggs/
 dist/
 downloads/
@@ -172,3 +172,6 @@ demo/csharp/*/Properties
 
 # doxygen
 docs/cppapi/docs
+
+# custom
+trans*/
