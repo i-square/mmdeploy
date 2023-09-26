@@ -53,3 +53,6 @@ add_example(rotated_detector cpp rotated_detector)
 add_example(pose_tracker cpp pose_tracker)
 add_example(pose_detector cpp det_pose)
 add_example(video_recognizer cpp video_cls)
+
+add_example(detector cpp tool_det)
+add_example(pose_detector cpp tool_lmk)
