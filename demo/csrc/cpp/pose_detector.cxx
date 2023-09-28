@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
   auto device_name = argv[1];
   auto model_path = argv[2];
   auto image_path = argv[3];
-  cv::Mat img = cv::imread(image_path);
+  cv::Mat img = cv::imread(image_path, -1);
   if (!img.data) {
     fprintf(stderr, "failed to load image: %s\n", image_path);
     return 1;
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
   using namespace mmdeploy;
 
-  mmdeploy::Profiler profiler("/tmp/profile.bin");
+  mmdeploy::Profiler profiler("profile_lmk.bin");
   mmdeploy::Context context;
   context.Add(mmdeploy::Device(device_name));
   context.Add(profiler);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < res[0].length; i++) {
     cv::circle(img, {(int)res[0].point[i].x, (int)res[0].point[i].y}, 1, {0, 255, 0}, 2);
   }
-  cv::imwrite("output_pose.png", img);
+  cv::imwrite("output_lmk.jpg", img);
 
   return 0;
 }

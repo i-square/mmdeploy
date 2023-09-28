@@ -7,21 +7,21 @@
 DEFINE_ARG_string(model, "Model path");
 DEFINE_ARG_string(image, "Input image path");
 DEFINE_string(device, "cpu", R"(Device name, e.g. "cpu", "cuda")");
-DEFINE_string(output, "detector_output.jpg", "Output image path");
+DEFINE_string(output, "output_det.jpg", "Output image path");
 
-DEFINE_double(det_thr, .5, "Detection score threshold");
+DEFINE_double(det_thr, .3, "Detection score threshold");
 
 int main(int argc, char* argv[]) {
   if (!utils::ParseArguments(argc, argv)) {
     return -1;
   }
 
-  cv::Mat img = cv::imread(ARGS_image);
+  cv::Mat img = cv::imread(ARGS_image, -1);
   if (img.empty()) {
     fprintf(stderr, "failed to load image: %s\n", ARGS_image.c_str());
     return -1;
   }
-  mmdeploy::Profiler profiler("/tmp/profile.bin");
+  mmdeploy::Profiler profiler("profile_det.bin");
   mmdeploy::Context context;
   context.Add(mmdeploy::Device(FLAGS_device));
   context.Add(profiler);
