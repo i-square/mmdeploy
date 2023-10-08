@@ -1,0 +1,69 @@
+#!/bin/bash
+echo "usage: $0 <model_path> [no_int8]"
+if [ $# -lt 1 ];then
+    exit 0
+fi
+
+PLATFORM='ncnn_int8'
+if [ $# -eq 2 ];then
+    PLATFORM='ncnn_fp32'
+fi
+
+MODEL_PATH=$1
+PTH_PATH=`find $MODEL_PATH -name "*.pth"`
+PY_PATH=`find $MODEL_PATH -name "*.py"`
+if [[ $MODEL_PATH == */ ]]; then
+    MODEL_PATH=${MODEL_PATH%/*}
+fi
+NAME=${MODEL_PATH##*/}
+
+# trans
+WORK_DIR=trans.`date "+%Y%m%d"`/${NAME}.${PLATFORM}
+if [ "$PLATFORM" == "ncnn_int8" ];then
+    CFG='configs/mmyolo/detection_ncnn-int8_static-192x320_gray.py'
+    #python -m debugpy --listen 9999 --wait-for-client \
+    python \
+        tools/deploy.py \
+        $CFG \
+        $PY_PATH \
+        $PTH_PATH \
+        data/gray/jeff-nir-portrait_gray.png \
+        --work-dir $WORK_DIR \
+        --device cpu \
+        --dump-info \
+        --quant \
+        --quant-image-dir data/quant_data_mmyolo
+else
+    CFG='configs/mmyolo/detection_ncnn-fp32_static-192x320_gray.py'
+    #python -m debugpy --listen 9999 --wait-for-client \
+    python \
+        tools/deploy.py \
+        $CFG \
+        $PY_PATH \
+        $PTH_PATH \
+        data/gray/jeff-nir-portrait_gray.png \
+        --work-dir $WORK_DIR \
+        --device cpu \
+        --dump-info
+fi
+
+
+R=$?
+if [ $R -ne 0 ];then
+    echo "trans error, code: $R"
+    exit $R
+fi
+
+# post
+rm $WORK_DIR/*.onnx
+
+mv $WORK_DIR/pipeline.json $WORK_DIR/pipeline.json.bak
+if [ "$PLATFORM" == "ncnn_int8" ];then
+    rm $WORK_DIR/*.table
+    mv $WORK_DIR/end2end_int8.bin $WORK_DIR/end2end.bin
+    mv $WORK_DIR/end2end_int8.param $WORK_DIR/end2end.param
+    python trans.pipeline.py $WORK_DIR/pipeline.json.bak -2|jq > $WORK_DIR/pipeline.json
+else
+    python trans.pipeline.py $WORK_DIR/pipeline.json.bak -2|jq > $WORK_DIR/pipeline.json
+fi
+rm $WORK_DIR/pipeline.json.bak

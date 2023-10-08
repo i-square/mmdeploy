@@ -12,6 +12,13 @@ if 'color_type' not in l:
 if idx >= 0:
     t.pop(idx)
 
+# for det
+if idx == -2:
+    r = t[1]
+    scale = r['scale']
+    w, h = scale[0], scale[1]
+    r['scale'] = [h, w]
+
 # for lmk
 p = j['pipeline']['tasks'][2]
 #if p['module'] == 'mmpose':
