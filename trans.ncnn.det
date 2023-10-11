@@ -1,12 +1,12 @@
 #!/bin/bash
-echo "usage: $0 <model_path> [no_int8]"
+echo "usage: $0 <model_path> [use_int8]"
 if [ $# -lt 1 ];then
     exit 0
 fi
 
-PLATFORM='ncnn_int8'
+PLATFORM='ncnn_fp32'
 if [ $# -eq 2 ];then
-    PLATFORM='ncnn_fp32'
+    PLATFORM='ncnn_int8'
 fi
 
 MODEL_PATH=$1
