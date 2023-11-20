@@ -53,6 +53,10 @@ Result<void> NCNNNet::Init(const Value& args) {
     net_.opt.use_fp16_storage = false;
     net_.opt.use_fp16_arithmetic = false;
   }
+  // test
+  // net_.opt.lightmode = true;
+  net_.opt.num_threads = 1;
+
   OUTCOME_TRY(params_, model.ReadFile(config.net));
   OUTCOME_TRY(weights_, model.ReadFile(config.weights));
   register_mmdeploy_custom_layers(net_);
