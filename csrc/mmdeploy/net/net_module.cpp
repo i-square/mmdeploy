@@ -229,9 +229,9 @@ struct NetModule::Impl {
       }
     }
 
-    if (is_profiling_) {
-      OUTCOME_TRY(stream_.Wait());
-    }
+    // if (is_profiling_) {
+    OUTCOME_TRY(stream_.Wait()); // sync always to avoid data issue on arm
+    // }
 
     return outputs;
   }
@@ -265,7 +265,7 @@ struct NetModule::Impl {
       if (tmp.size()) {
         OUTCOME_TRY(output.CopyTo(tmp, stream_));
       } else {
-        MMDEPLOY_WARN("copy skipped due to zero sized tensor");
+        MMDEPLOY_TRACE("copy skipped due to zero sized tensor");
       }
       if (indices.size() > 1) {
         for (int i = 0; i < indices.size(); ++i) {
